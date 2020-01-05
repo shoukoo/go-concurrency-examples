@@ -12,49 +12,45 @@ func init() {
 }
 
 func main() {
+
 	var wg sync.WaitGroup
-
-	wg.Add(2)
 	ch := make(chan int)
+	wg.Add(2)
 
 	go func() {
-		tennis("Andy", ch)
+		player("Andy", ch)
 		wg.Done()
 	}()
 
 	go func() {
-		tennis("Hiroko", ch)
+		player("Danny", ch)
 		wg.Done()
 	}()
 
-	go func() {
-		tennis("Mei", ch)
-		wg.Done()
-	}()
-
-	ch <- 0
+	ch <- 1
 	wg.Wait()
+
 }
 
-func tennis(name string, ch chan int) {
-
+func player(name string, ch chan int) {
 	for {
+
 		ball, alive := <-ch
 
 		if !alive {
-			fmt.Printf("Player won %+v\n", name)
+			fmt.Printf("%+v has won the match\n", name)
 			return
 		}
 
-		hit := rand.Intn(100)
-		if hit%13 == 0 {
-			fmt.Printf("%v Misses the ball\n", name)
+		randomness := rand.Intn(1000)
+
+		if randomness%13 == 0 {
+			fmt.Printf("%+v misses the ball\n", name)
 			close(ch)
 			return
 		}
 
-		fmt.Printf("%v Hits the ball back\n", name)
-		ball++
-		ch <- ball
+		fmt.Printf("%v hits the ball back\n", name)
+		ch <- ball + 1
 	}
 }

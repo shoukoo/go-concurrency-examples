@@ -14,33 +14,28 @@ func main() {
 	fanOut()
 }
 
-// fanOut: You are a manager and you hire one new employee for the exact amount
-// of work you have to get done. Each new employee knows immediately what they
+// fanOut: You are a manager and you build one new robot for the exact amount
+// of work you have to get done. Each new robot pre-programmed to know what they
 // are expected to do and starts their work. You sit waiting for all the results
-// of the employees work. The amount of time you wait on the employees is
-// unknown because you need a guarantee that all the results sent by employees
+// of the work. The amount of time you wait on the rebots is
+// unknown because you need a guarantee that all the results sent by robots
 // are received by you. No given employee needs an immediate guarantee that you
 // received their result.
 
 func fanOut() {
-	emps := 2000
-	ch := make(chan string, emps)
-
-	for e := 0; e < emps; e++ {
-		go func(emp int) {
-			time.Sleep(time.Duration(rand.Intn(200)) * time.Millisecond)
-			ch <- "paper"
-			fmt.Println("employee : sent signal :", emp)
-		}(e)
+	works := 2000
+	ch := make(chan string, works)
+	for i := 0; i < works; i++ {
+		go func(id int) {
+			time.Sleep(time.Duration(rand.Intn(100)) * time.Millisecond)
+			ch <- fmt.Sprintf("Robot %v finished working on task %v", id, id)
+		}(i)
 	}
 
-	for emps > 0 {
-		p := <-ch
-		emps--
-		fmt.Println(p)
-		fmt.Println("manager : recv'd signal :", emps)
+	for works > 0 {
+		result := <-ch
+		works--
+		fmt.Printf("%v\n", result)
 	}
 
-	time.Sleep(time.Second)
-	fmt.Println("-------------------------------------------------------------")
 }

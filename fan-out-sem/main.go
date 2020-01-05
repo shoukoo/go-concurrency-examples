@@ -15,40 +15,39 @@ func main() {
 	fanOutSem()
 }
 
-// fanOutSem: You are a manager and you hire one new employee for the exact amount
-// of work you have to get done. Each new employee knows immediately what they
+// fanOutSem: You are a developer and you build one new robot for the exact amount
+// of work you have to get done. Each new robot knows immediately what they
 // are expected to do and starts their work. However, you don't want all the
-// employees working at once. You want to limit how many of them are working at
-// any given time. You sit waiting for all the results of the employees work.
-// The amount of time you wait on the employees is unknown because you need a
-// guarantee that all the results sent by employees are received by you. No
-// given employee needs an immediate guarantee that you received their result.
+// robots working at once. You want to limit how many of them are working at
+// any given time. You sit waiting for all the results of the robots work.
+// The amount of time you wait on the robots is unknown because you need a
+// guarantee that all the results sent by robots are received by you. No
+// given robot needs an immediate guarantee that you received their result.
+
 func fanOutSem() {
-	employees := 200
-	ch := make(chan string, employees)
-
+	ch := make(chan string)
 	cpu := runtime.NumCPU()
-	sem := make(chan bool, cpu)
+	limit := make(chan bool, cpu)
 
-	// those goroutines are deposible.
-	for i := 0; i < employees; i++ {
+	works := 1000
+
+	for i := 0; i < works; i++ {
 		go func(id int) {
-			sem <- true
+			limit <- true
 			{
-				time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
-				ch <- fmt.Sprintf("employee %v completed task\n", id)
+				time.Sleep(time.Duration(rand.Intn(100)) * time.Millisecond)
+				ch <- fmt.Sprintf("robot %v finish working on task %v\n", id, id)
 			}
-			<-sem
+			<-limit
 		}(i)
 	}
 
-	for employees > 0 {
-		task := <-ch
-		employees--
-		fmt.Printf("%v", task)
+	for works > 0 {
+		result := <-ch
+		works--
+		fmt.Printf("You received the result: %v", result)
 
 	}
 	time.Sleep(time.Second)
 	close(ch)
-	fmt.Println("COmpleted")
 }

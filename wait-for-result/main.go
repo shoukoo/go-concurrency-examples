@@ -14,19 +14,20 @@ func main() {
 	waitForResult()
 }
 
-// waitForResult: You are a manager and you hire a new employee. Your new
-// employee knows immediately what they are expected to do and starts their
-// work. You sit waiting for the result of the employee's work. The amount
-// of time you wait on the employee is unknown because you need a
-// guarantee that the result sent by the employee is received by you.
+// You are an engineer and you a build a robot. You pre-programed the new robot
+// to know what needs to be done. You sit and waiting for the result from the robot.
+// The amount of time you wait in unknown but you gurantee that the result sent by
+// the robot is received by you
 func waitForResult() {
-	task := make(chan string, 1)
+	work := make(chan string)
+
 	go func() {
-		time.Sleep(time.Duration(rand.Intn(5000)) * time.Millisecond)
-		task <- "done"
+		time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
+		work <- "Done"
 	}()
 
-	manager := <-task
+	time.Sleep(time.Second)
+	manager := <-work
 
-	fmt.Println(manager)
+	fmt.Printf("%+v\n", manager)
 }
